@@ -1,6 +1,4 @@
-<img width="1920" height="1080" alt="Screenshot (60)" src="https://github.com/user-attachments/assets/0ac1aa36-4916-403f-a8c5-13f695fbd71c" />
-# BMI calc screenshot 
-<img width="1906" height="893" alt="Screenshot 2026-08-08 202502" src="https://github.com/user-attachments/assets/8956e1ed-0869-49e2-8619-a72b7c03af59" />
+
 
 # taskati screenshots
 <img width="1920" height="1080" alt="Screenshot (47)" src="https://github.com/user-attachments/assets/646b8c7d-89a9-4295-93f9-681e012f588c" />
