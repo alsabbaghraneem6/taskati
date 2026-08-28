@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 
 class Profile extends StatefulWidget {
@@ -10,14 +11,23 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  XFile? image;
+  String? imagePath;
+  final settingsBox = Hive.box('settings');
+
+  @override
+  void initState() {
+    super.initState();
+     imagePath = settingsBox.get('profileImage');
+  }
 
   Future<void> pickImage() async {
     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
-        image = pickedFile;
+        imagePath = pickedFile.path;
       });
+
+      await settingsBox.put('profileImage', pickedFile.path);
     }
   }
 
@@ -39,8 +49,10 @@ class _ProfileState extends State<Profile> {
               child: CircleAvatar(
                 radius: 60,
                 backgroundColor: Colors.deepPurpleAccent,
-                backgroundImage: image != null ? FileImage(File(image!.path)) : null,
-                child: image == null
+                backgroundImage: (imagePath != null && File(imagePath!).existsSync())
+                    ? FileImage(File(imagePath!))
+                    : null,
+                child: (imagePath == null || !File(imagePath!).existsSync())
                     ? const Icon(Icons.camera_alt, size: 40, color: Colors.white)
                     : null,
               ),
@@ -49,6 +61,28 @@ class _ProfileState extends State<Profile> {
             const Text(
               "Tap image to upload photo",
               style: TextStyle(color: Colors.grey),
+            ),
+            const SizedBox(height: 40),
+
+            ValueListenableBuilder(
+              valueListenable: settingsBox.listenable(keys: ['isDark']),
+              builder: (context, Box box, _) {
+                bool isDark = box.get('isDark', defaultValue: true);
+                return SwitchListTile(
+                  title: const Text(
+                    "Dark Mode",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  secondary: Icon(
+                    isDark ? Icons.dark_mode : Icons.light_mode,
+                    color: Colors.deepPurpleAccent,
+                  ),
+                  value: isDark,
+                  onChanged: (val) {
+                    settingsBox.put('isDark', val);
+                  },
+                );
+              },
             ),
           ],
         ),

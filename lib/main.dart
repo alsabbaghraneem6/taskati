@@ -3,24 +3,13 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_app/Screens/home.dart';
 
-//void main() async {
-// WidgetsFlutterBinding.ensureInitialized();
-// await Hive.initFlutter();
-//if (!Hive.isBoxOpen('myTask')) {
-// await Hive.openBox('myTask');
-//}
-//if (!Hive.isBoxOpen('doneTask')) {
-// await Hive.openBox('doneTask');
-//}
-//await requestImagePermission();
-//runApp(const MyApp());
-//}
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Hive.initFlutter();
   await Hive.openBox('myTask');
   await Hive.openBox('doneTask');
+  await Hive.openBox('settings');
 
   runApp(const MyApp());
 }
@@ -36,12 +25,37 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Taskatii',
-      theme: ThemeData.dark(),
-      debugShowCheckedModeBanner: false,
-      home: const Home(),
+    var settingsBox = Hive.box('settings');
+
+    // الاستماع لتغييرات الثيم تلقائياً
+    return ValueListenableBuilder(
+      valueListenable: settingsBox.listenable(keys: ['isDark']),
+      builder: (context, Box box, _) {
+        bool isDark = box.get('isDark', defaultValue: true);
+
+        return MaterialApp(
+          title: 'Taskatii',
+          themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+          theme: ThemeData(
+            brightness: Brightness.light,
+            primarySwatch: Colors.deepPurple,
+            scaffoldBackgroundColor: Colors.grey[100],
+            appBarTheme: const AppBarTheme(
+              backgroundColor: Colors.deepPurpleAccent,
+              foregroundColor: Colors.white,
+            ),
+          ),
+          darkTheme: ThemeData.dark().copyWith(
+            primaryColor: Colors.deepPurpleAccent,
+            appBarTheme: const AppBarTheme(
+              backgroundColor: Colors.deepPurpleAccent,
+              foregroundColor: Colors.white,
+            ),
+          ),
+          debugShowCheckedModeBanner: false,
+          home: const Home(),
+        );
+      },
     );
   }
 }
-
