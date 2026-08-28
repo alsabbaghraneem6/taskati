@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     var settingsBox = Hive.box('settings');
 
-    // الاستماع لتغييرات الثيم تلقائياً
+
     return ValueListenableBuilder(
       valueListenable: settingsBox.listenable(keys: ['isDark']),
       builder: (context, Box box, _) {
